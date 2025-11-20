@@ -1,0 +1,258 @@
+package com.example.proyecto_final_team.ui.screens.home
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
+import com.example.proyecto_final_team.data.FakeData
+import com.example.proyecto_final_team.model.Routine
+import com.example.proyecto_final_team.ui.navigation.Screen
+import com.example.proyecto_final_team.ui.theme.AccentOrange
+import com.example.proyecto_final_team.ui.theme.PrimaryGreen
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreen(navController: NavController) {
+    Scaffold(
+        bottomBar = {
+            BottomAppBar(
+                containerColor = Color.White,
+                contentColor = Color.Gray
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    Text("Inicio", color = PrimaryGreen, fontWeight = FontWeight.Bold, modifier = Modifier.clickable {})
+                    Text("Guardados", modifier = Modifier.clickable {})
+                    Text("Seguidos", modifier = Modifier.clickable {})
+                }
+            }
+        }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+        ) {
+            item {
+                Text(
+                    text = "Buenos dias Emilio",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                // Search Bar
+                TextField(
+                    value = "",
+                    onValueChange = {},
+                    placeholder = { Text("Buscar") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(24.dp))
+                        .background(Color(0xFFF3F4F6)),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color(0xFFF3F4F6),
+                        unfocusedContainerColor = Color(0xFFF3F4F6),
+                        disabledContainerColor = Color(0xFFF3F4F6),
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    )
+                )
+                
+                Spacer(modifier = Modifier.height(24.dp))
+                
+                Text(
+                    text = "Para ti",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            item {
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(FakeData.routines.take(3)) { routine ->
+                        RoutineCard(routine) {
+                            navController.navigate(Screen.Detail.createRoute(routine.id))
+                        }
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(24.dp))
+                
+                Text(
+                    text = "TU libreria",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    LibraryCard("Saved", Color(0xFFE0F2F1))
+                    LibraryCard("Recent", Color(0xFFF3F4F6))
+                }
+                
+                Spacer(modifier = Modifier.height(24.dp))
+                
+                // Categories
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val categories = listOf("Ejercicio", "Relajacion", "Yoga", "Meditacion")
+                    items(categories) { category ->
+                        Button(
+                            onClick = {},
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (category == "Ejercicio") AccentOrange else Color.White
+                            ),
+                            shape = RoundedCornerShape(16.dp),
+                            border = if (category != "Ejercicio") androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray) else null
+                        ) {
+                            Text(text = category, color = if (category == "Ejercicio") Color.White else Color.Gray)
+                        }
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(24.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Explora entrenador",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Ver todo",
+                        color = PrimaryGreen,
+                        fontSize = 14.sp
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            items(FakeData.routines) { routine ->
+                TrainerRoutineItem(routine) {
+                    navController.navigate(Screen.Detail.createRoute(routine.id))
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun RoutineCard(routine: Routine, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .width(200.dp)
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column {
+            Image(
+                painter = rememberAsyncImagePainter(routine.imageUrl),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+            )
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(text = routine.title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(text = routine.duration, color = Color.Gray, fontSize = 12.sp)
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = onClick,
+                    colors = ButtonDefaults.buttonColors(containerColor = AccentOrange),
+                    modifier = Modifier.fillMaxWidth().height(36.dp),
+                    contentPadding = PaddingValues(0.dp)
+                ) {
+                    Text("iniciar", fontSize = 12.sp)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun LibraryCard(title: String, color: Color) {
+    Box(
+        modifier = Modifier
+            .width(150.dp)
+            .height(80.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(color)
+            .padding(16.dp),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(modifier = Modifier.size(40.dp).background(Color.White, CircleShape))
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(text = title, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@Composable
+fun TrainerRoutineItem(routine: Routine, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .background(Color.White, RoundedCornerShape(16.dp))
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = rememberAsyncImagePainter(routine.imageUrl),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(60.dp)
+                .clip(RoundedCornerShape(12.dp))
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = routine.title, fontWeight = FontWeight.Bold)
+            Text(text = "${routine.duration} • ${routine.category}", color = Color.Gray, fontSize = 12.sp)
+        }
+        Text(text = "favorite", color = AccentOrange.copy(alpha = 0.7f), fontSize = 12.sp)
+    }
+}
