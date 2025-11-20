@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -28,10 +30,25 @@ import com.example.proyecto_final_team.model.Routine
 import com.example.proyecto_final_team.ui.navigation.Screen
 import com.example.proyecto_final_team.ui.theme.AccentOrange
 import com.example.proyecto_final_team.ui.theme.PrimaryGreen
+import com.example.proyecto_final_team.viewmodel.FavoritesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController, favoritesViewModel: FavoritesViewModel) {
+    var searchQuery by remember { mutableStateOf("") }
+    
+    val filteredRoutines = remember(searchQuery) {
+        if (searchQuery.isBlank()) {
+            FakeData.routines
+        } else {
+            FakeData.routines.filter {
+                it.title.contains(searchQuery, ignoreCase = true) ||
+                it.category.contains(searchQuery, ignoreCase = true) ||
+                it.trainer.name.contains(searchQuery, ignoreCase = true)
+            }
+        }
+    }
+    
     Scaffold(
         bottomBar = {
             BottomAppBar(
@@ -42,9 +59,9 @@ fun HomeScreen(navController: NavController) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    Text("Inicio", color = PrimaryGreen, fontWeight = FontWeight.Bold, modifier = Modifier.clickable {})
-                    Text("Guardados", modifier = Modifier.clickable {})
-                    Text("Seguidos", modifier = Modifier.clickable {})
+                    Text("Inicio", color = PrimaryGreen, fontWeight = FontWeight.Bold, modifier = Modifier.clickable { navController.navigate(Screen.Home.route) })
+                    Text("Guardados", modifier = Modifier.clickable { navController.navigate(Screen.Saved.route) })
+                    Text("Seguidos", modifier = Modifier.clickable { navController.navigate(Screen.Following.route) })
                 }
             }
         }
@@ -65,9 +82,9 @@ fun HomeScreen(navController: NavController) {
 
                 // Search Bar
                 TextField(
-                    value = "",
-                    onValueChange = {},
-                    placeholder = { Text("Buscar") },
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    placeholder = { Text("Buscar rutinas o entrenadores...") },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -158,15 +175,16 @@ fun HomeScreen(navController: NavController) {
                     Text(
                         text = "Ver todo",
                         color = PrimaryGreen,
-                        fontSize = 14.sp
+                        fontSize = 14.sp,
+                        modifier = Modifier.clickable { navController.navigate(Screen.AllTrainers.route) }
                     )
                 }
                 
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            items(FakeData.routines) { routine ->
-                TrainerRoutineItem(routine) {
+            items(filteredRoutines) { routine ->
+                TrainerRoutineItem(routine, favoritesViewModel) {
                     navController.navigate(Screen.Detail.createRoute(routine.id))
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -231,7 +249,9 @@ fun LibraryCard(title: String, color: Color) {
 }
 
 @Composable
-fun TrainerRoutineItem(routine: Routine, onClick: () -> Unit) {
+fun TrainerRoutineItem(routine: Routine, favoritesViewModel: FavoritesViewModel, onClick: () -> Unit) {
+    val isFavorite = favoritesViewModel.favoriteRoutines.collectAsState().value.contains(routine.id)
+    
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -253,6 +273,12 @@ fun TrainerRoutineItem(routine: Routine, onClick: () -> Unit) {
             Text(text = routine.title, fontWeight = FontWeight.Bold)
             Text(text = "${routine.duration} • ${routine.category}", color = Color.Gray, fontSize = 12.sp)
         }
-        Text(text = "favorite", color = AccentOrange.copy(alpha = 0.7f), fontSize = 12.sp)
+        IconButton(onClick = { favoritesViewModel.toggleFavorite(routine.id) }) {
+            Icon(
+                if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                tint = if (isFavorite) AccentOrange else Color.Gray
+            )
+        }
     }
 }

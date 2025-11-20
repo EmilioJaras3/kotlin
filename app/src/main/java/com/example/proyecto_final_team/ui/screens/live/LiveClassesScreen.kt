@@ -151,7 +151,6 @@ fun LiveNowCard(liveClass: LiveClass) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("Now", color = PrimaryGreen, fontWeight = FontWeight.Bold)
-                // Progress bar simulation
                 Box(
                     modifier = Modifier
                         .weight(1f)

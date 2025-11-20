@@ -128,7 +128,12 @@ fun RegisterScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
-                onClick = { navController.navigate(Screen.Home.route) },
+                onClick = { 
+                    // Navigate to login after successful registration
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Register.route) { inclusive = true }
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -143,7 +148,7 @@ fun RegisterScreen(navController: NavController) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Ya tienes cuenta ? ", color = Color.Gray)
+                Text(text = "¿Ya tienes cuenta? ", color = Color.Gray)
                 Text(
                     text = "Log in",
                     color = PrimaryGreen,

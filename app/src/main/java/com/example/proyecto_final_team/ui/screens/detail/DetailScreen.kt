@@ -9,8 +9,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,12 +25,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.proyecto_final_team.data.FakeData
+import com.example.proyecto_final_team.ui.navigation.Screen
 import com.example.proyecto_final_team.ui.theme.AccentBlue
+import com.example.proyecto_final_team.ui.theme.AccentOrange
+import com.example.proyecto_final_team.viewmodel.FavoritesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailScreen(navController: NavController, routineId: Int) {
+fun DetailScreen(navController: NavController, routineId: Int, favoritesViewModel: FavoritesViewModel) {
     val routine = FakeData.routines.find { it.id == routineId } ?: return
+    val isFavorite = favoritesViewModel.favoriteRoutines.collectAsState().value.contains(routineId)
 
     Scaffold(
         topBar = {
@@ -36,6 +43,15 @@ fun DetailScreen(navController: NavController, routineId: Int) {
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { favoritesViewModel.toggleFavorite(routineId) }) {
+                        Icon(
+                            if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                            tint = if (isFavorite) AccentOrange else Color.Gray
+                        )
                     }
                 }
             )
@@ -127,7 +143,7 @@ fun DetailScreen(navController: NavController, routineId: Int) {
             Spacer(modifier = Modifier.height(32.dp))
             
             Button(
-                onClick = { /* TODO: Play video */ },
+                onClick = { navController.navigate(Screen.Player.createRoute(routineId)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),

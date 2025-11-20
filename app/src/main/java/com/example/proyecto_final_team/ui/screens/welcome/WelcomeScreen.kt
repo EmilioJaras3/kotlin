@@ -25,7 +25,7 @@ import com.example.proyecto_final_team.ui.theme.PrimaryGreen
 @Composable
 fun WelcomeScreen(navController: NavController) {
     Box(modifier = Modifier.fillMaxSize()) {
-        // Background Image
+
         Image(
             painter = rememberAsyncImagePainter("https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1999&auto=format&fit=crop"),
             contentDescription = "Background",
@@ -33,7 +33,6 @@ fun WelcomeScreen(navController: NavController) {
             modifier = Modifier.fillMaxSize()
         )
 
-        // Overlay gradient
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -52,7 +51,7 @@ fun WelcomeScreen(navController: NavController) {
             verticalArrangement = Arrangement.Bottom
         ) {
             Text(
-                text = "Encuentra tu calma",
+                text = "Encuentra tu calma.",
                 color = Color.White,
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold
@@ -61,7 +60,7 @@ fun WelcomeScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(8.dp))
             
             Text(
-                text = "guias de relajacion y encuentrar la paz",
+                text = "guias de relajacion y encuentrar la paz.",
                 color = Color.White.copy(alpha = 0.8f),
                 fontSize = 16.sp
             )
@@ -94,7 +93,6 @@ fun WelcomeScreen(navController: NavController) {
             
             Spacer(modifier = Modifier.height(48.dp))
             
-            // Dots indicator (visual only)
             Row(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()

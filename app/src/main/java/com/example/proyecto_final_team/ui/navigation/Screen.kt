@@ -9,4 +9,10 @@ sealed class Screen(val route: String) {
         fun createRoute(routineId: Int) = "detail/$routineId"
     }
     object LiveClasses : Screen("live_classes")
+    object Saved : Screen("saved")
+    object Following : Screen("following")
+    object AllTrainers : Screen("all_trainers")
+    object Player : Screen("player/{routineId}") {
+        fun createRoute(routineId: Int) = "player/$routineId"
+    }
 }
