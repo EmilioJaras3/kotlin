@@ -1,5 +1,8 @@
 package com.example.proyecto_final_team.ui.screens.admin
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,6 +31,13 @@ fun AddRoutineScreen(navController: NavController) {
     var duration by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var imageUrl by remember { mutableStateOf("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070&auto=format&fit=crop") }
+    var videoUri by remember { mutableStateOf<android.net.Uri?>(null) }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        videoUri = uri
+    }
 
     Scaffold(
         topBar = {
@@ -83,6 +93,25 @@ fun AddRoutineScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3
             )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly))
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(if (videoUri != null) "Video Seleccionado" else "Seleccionar Video")
+            }
+            if (videoUri != null) {
+                Text(
+                    text = "URI: ${videoUri?.lastPathSegment}",
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
@@ -99,6 +128,7 @@ fun AddRoutineScreen(navController: NavController) {
                             description = description,
                             trainer = FakeData.trainers.random(),
                             imageUrl = imageUrl,
+                            videoUrl = videoUri?.toString() ?: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
                             isFavorite = false
                         )
                         FakeData.routines.add(newRoutine)
@@ -111,7 +141,7 @@ fun AddRoutineScreen(navController: NavController) {
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Subir Video", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text("Subir Rutina", fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
         }
     }

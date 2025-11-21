@@ -10,6 +10,7 @@ data class Routine(
     val description: String,
     val trainer: Trainer,
     val imageUrl: String,
+    val videoUrl: String = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     val isFavorite: Boolean = false
 )
 

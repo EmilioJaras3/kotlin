@@ -23,6 +23,8 @@ import com.example.proyecto_final_team.ui.theme.PrimaryGreen
 fun LoginScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf(false) }
+    var passwordError by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -65,19 +67,32 @@ fun LoginScreen(navController: NavController) {
             )
             TextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = { 
+                    email = it
+                    emailError = false
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
                 shape = RoundedCornerShape(24.dp),
+                isError = emailError,
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
                     disabledContainerColor = Color.White,
                     focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
+                    unfocusedIndicatorColor = Color.Transparent,
+                    errorIndicatorColor = Color.Red
                 )
             )
+            if (emailError) {
+                Text(
+                    text = "El email es requerido",
+                    color = Color.Red,
+                    fontSize = 12.sp,
+                    modifier = Modifier.align(Alignment.Start)
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -89,25 +104,45 @@ fun LoginScreen(navController: NavController) {
             )
             TextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = { 
+                    password = it
+                    passwordError = false
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
                 visualTransformation = PasswordVisualTransformation(),
                 shape = RoundedCornerShape(24.dp),
+                isError = passwordError,
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
                     disabledContainerColor = Color.White,
                     focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
+                    unfocusedIndicatorColor = Color.Transparent,
+                    errorIndicatorColor = Color.Red
                 )
             )
+            if (passwordError) {
+                Text(
+                    text = "La contraseña es requerida",
+                    color = Color.Red,
+                    fontSize = 12.sp,
+                    modifier = Modifier.align(Alignment.Start)
+                )
+            }
 
             Spacer(modifier = Modifier.height(48.dp))
 
             Button(
-                onClick = { navController.navigate(Screen.Home.route) },
+                onClick = { 
+                    emailError = email.isEmpty()
+                    passwordError = password.isEmpty()
+                    
+                    if (!emailError && !passwordError) {
+                        navController.navigate(Screen.Home.route) 
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
