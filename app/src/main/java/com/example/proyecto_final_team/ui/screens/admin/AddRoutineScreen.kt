@@ -30,6 +30,10 @@ fun AddRoutineScreen(navController: NavController) {
     var category by remember { mutableStateOf("") }
     var duration by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
+    var level by remember { mutableStateOf("General") }
+    var expandedLevel by remember { mutableStateOf(false) }
+    val levels = listOf("Beginner", "Intermediate", "Advanced", "General")
+
     var imageUrl by remember { mutableStateOf("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070&auto=format&fit=crop") }
     var videoUri by remember { mutableStateOf<android.net.Uri?>(null) }
 
@@ -75,6 +79,38 @@ fun AddRoutineScreen(navController: NavController) {
                 label = { Text("Categoría") },
                 modifier = Modifier.fillMaxWidth()
             )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Level Dropdown
+            ExposedDropdownMenuBox(
+                expanded = expandedLevel,
+                onExpandedChange = { expandedLevel = !expandedLevel },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = level,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Nivel") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedLevel) },
+                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = expandedLevel,
+                    onDismissRequest = { expandedLevel = false }
+                ) {
+                    levels.forEach { selectionOption ->
+                        DropdownMenuItem(
+                            text = { Text(selectionOption) },
+                            onClick = {
+                                level = selectionOption
+                                expandedLevel = false
+                            }
+                        )
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
@@ -123,7 +159,7 @@ fun AddRoutineScreen(navController: NavController) {
                             title = title,
                             category = category,
                             duration = "$duration min",
-                            level = "General",
+                            level = level,
                             equipment = "None",
                             description = description,
                             trainer = FakeData.trainers.random(),

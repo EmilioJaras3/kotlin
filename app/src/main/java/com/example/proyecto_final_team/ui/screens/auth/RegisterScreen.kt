@@ -14,6 +14,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.proyecto_final_team.data.FakeData
+import com.example.proyecto_final_team.model.User
 import com.example.proyecto_final_team.ui.navigation.Screen
 import com.example.proyecto_final_team.ui.theme.PrimaryGreen
 
@@ -23,6 +25,7 @@ fun RegisterScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Box(
         modifier = Modifier
@@ -125,13 +128,28 @@ fun RegisterScreen(navController: NavController) {
                 )
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            if (errorMessage != null) {
+                Text(
+                    text = errorMessage!!,
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(48.dp))
 
             Button(
-                onClick = { 
-                    // Navigate to login after successful registration
-                    navController.navigate(Screen.Login.route) {
-                        popUpTo(Screen.Register.route) { inclusive = true }
+                onClick = {
+                    if (email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty()) {
+                        if (password == confirmPassword) {
+                            FakeData.users.add(User(email, password))
+                            navController.navigate(Screen.Login.route)
+                        } else {
+                            errorMessage = "Las contraseñas no coinciden"
+                        }
+                    } else {
+                        errorMessage = "Todos los campos son requeridos"
                     }
                 },
                 modifier = Modifier
@@ -140,7 +158,7 @@ fun RegisterScreen(navController: NavController) {
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
                 shape = RoundedCornerShape(28.dp)
             ) {
-                Text(text = "Register", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text(text = "Sign Up", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -148,7 +166,7 @@ fun RegisterScreen(navController: NavController) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "¿Ya tienes cuenta? ", color = Color.Gray)
+                Text(text = "¿Ya tienes cuenta? ", color = Color.Black)
                 Text(
                     text = "Log in",
                     color = PrimaryGreen,

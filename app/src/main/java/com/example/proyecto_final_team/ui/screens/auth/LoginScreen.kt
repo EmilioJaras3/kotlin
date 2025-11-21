@@ -18,6 +18,8 @@ import androidx.navigation.NavController
 import com.example.proyecto_final_team.ui.navigation.Screen
 import com.example.proyecto_final_team.ui.theme.PrimaryGreen
 
+import com.example.proyecto_final_team.data.FakeData
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -25,6 +27,7 @@ fun LoginScreen(navController: NavController) {
     var password by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
+    var loginError by remember { mutableStateOf<String?>(null) }
 
     Box(
         modifier = Modifier
@@ -49,6 +52,7 @@ fun LoginScreen(navController: NavController) {
             )
             
             Spacer(modifier = Modifier.height(16.dp))
+
 
             Text(
                 text = "Bienvenido de regreso",
@@ -132,24 +136,39 @@ fun LoginScreen(navController: NavController) {
                 )
             }
 
+            if (loginError != null) {
+                Text(
+                    text = loginError!!,
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
             Spacer(modifier = Modifier.height(48.dp))
 
             Button(
                 onClick = { 
                     emailError = email.isEmpty()
                     passwordError = password.isEmpty()
+                    loginError = null
                     
                     if (!emailError && !passwordError) {
-                        navController.navigate(Screen.Home.route) 
+                        val user = FakeData.users.find { it.email == email && it.password == password }
+                        if (user != null) {
+                            navController.navigate(Screen.Home.route)
+                        } else {
+                            loginError = "Credenciales inválidas"
+                        }
                     }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA7D7E7)), // Light blueish from image
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA7D7E7)),
                 shape = RoundedCornerShape(28.dp)
             ) {
-                Text(text = "Login", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text(text = "Log in", color = Color.Black, fontSize = 18.sp, fontWeight = FontWeight.Bold)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -157,10 +176,10 @@ fun LoginScreen(navController: NavController) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Aun no te haz registrado ", color = Color.Gray)
+                Text(text = "Aun no te haz registrado ", color = Color.Black)
                 Text(
                     text = "Register",
-                    color = Color(0xFFA7D7E7),
+                    color = Color.Black,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable { navController.navigate(Screen.Register.route) }
                 )

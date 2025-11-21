@@ -3,8 +3,11 @@ package com.example.proyecto_final_team.data
 import com.example.proyecto_final_team.model.LiveClass
 import com.example.proyecto_final_team.model.Routine
 import com.example.proyecto_final_team.model.Trainer
+import com.example.proyecto_final_team.model.User
 
 object FakeData {
+    val users = mutableListOf<User>()
+
     val trainers = listOf(
         Trainer(1, "Anna Lee", "Instructora de yoga", "https://randomuser.me/api/portraits/women/44.jpg"),
         Trainer(2, "Alex Roy", "Entrenador personal", "https://randomuser.me/api/portraits/men/32.jpg"),
@@ -18,6 +21,7 @@ object FakeData {
             "Comienza tu día con energía y concentración. Este flujo suave está diseñado para despertar tu cuerpo y mente, ayudándote a conectarte con tu respiración y establecer una intención positiva para el día que tienes por delante. Perfecto para todos los niveles.",
             trainers[0],
             "https://images.unsplash.com/photo-1544367563-12123d8965cd?q=80&w=2070&auto=format&fit=crop",
+            "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
             isFavorite = true
         ),
         Routine(
@@ -25,6 +29,7 @@ object FakeData {
             "Fortalece tu abdomen y espalda baja con esta rutina intensa.",
             trainers[1],
             "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070&auto=format&fit=crop",
+            "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
             isFavorite = true
         ),
         Routine(
@@ -32,6 +37,7 @@ object FakeData {
             "Una breve pausa para reconectar contigo mismo.",
             trainers[2],
             "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1999&auto=format&fit=crop",
+            "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
             isFavorite = true
         ),
         Routine(
@@ -39,6 +45,7 @@ object FakeData {
             "Estiramientos profundos para mejorar la flexibilidad.",
             trainers[0],
             "https://images.unsplash.com/photo-1552196563-55cd4e45efb3?q=80&w=2026&auto=format&fit=crop",
+            "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
             isFavorite = true
         ),
         Routine(
@@ -46,6 +53,7 @@ object FakeData {
             "Encuentra paz interior con esta guía paso a paso.",
             trainers[2],
             "https://images.unsplash.com/photo-1528319725582-ddc096101511?q=80&w=2069&auto=format&fit=crop",
+            "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
             isFavorite = false
         )
     )

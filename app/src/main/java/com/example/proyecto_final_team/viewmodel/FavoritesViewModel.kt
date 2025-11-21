@@ -1,17 +1,41 @@
 package com.example.proyecto_final_team.viewmodel
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proyecto_final_team.data.FakeData
+import com.example.proyecto_final_team.data.dataStore
 import com.example.proyecto_final_team.model.Routine
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-class FavoritesViewModel : ViewModel() {
+class FavoritesViewModel(application: Application) : AndroidViewModel(application) {
     private val _favoriteRoutines = MutableStateFlow<Set<Int>>(emptySet())
     val favoriteRoutines: StateFlow<Set<Int>> = _favoriteRoutines.asStateFlow()
+
+    private val FAVORITES_KEY = stringPreferencesKey("favorites_list")
+
+    init {
+        viewModelScope.launch {
+            getApplication<Application>().dataStore.data
+                .map { preferences ->
+                    val favoritesString = preferences[FAVORITES_KEY] ?: ""
+                    if (favoritesString.isNotEmpty()) {
+                        favoritesString.split(",").mapNotNull { it.toIntOrNull() }.toSet()
+                    } else {
+                        emptySet()
+                    }
+                }
+                .collect { favorites ->
+                    _favoriteRoutines.value = favorites
+                }
+        }
+    }
 
     fun toggleFavorite(routineId: Int) {
         viewModelScope.launch {
@@ -22,6 +46,13 @@ class FavoritesViewModel : ViewModel() {
                 currentFavorites.add(routineId)
             }
             _favoriteRoutines.value = currentFavorites
+            saveFavorites(currentFavorites)
+        }
+    }
+
+    private suspend fun saveFavorites(favorites: Set<Int>) {
+        getApplication<Application>().dataStore.edit { preferences ->
+            preferences[FAVORITES_KEY] = favorites.joinToString(",")
         }
     }
 

@@ -29,3 +29,8 @@ data class LiveClass(
     val isLiveNow: Boolean,
     val imageUrl: String
 )
+
+data class User(
+    val email: String,
+    val password: String
+)
