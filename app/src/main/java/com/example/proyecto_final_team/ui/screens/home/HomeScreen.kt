@@ -73,12 +73,24 @@ fun HomeScreen(navController: NavController, favoritesViewModel: FavoritesViewMo
                 .padding(16.dp)
         ) {
             item {
-                Text(
-                    text = "Buenos dias Emilio",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Bienvenido",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Button(
+                        onClick = { navController.navigate(Screen.AddRoutine.route) },
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+                    ) {
+                        Text("+ Video")
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // Search Bar
                 TextField(

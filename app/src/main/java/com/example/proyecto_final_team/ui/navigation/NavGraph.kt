@@ -7,6 +7,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.proyecto_final_team.ui.screens.admin.AddRoutineScreen
 import com.example.proyecto_final_team.ui.screens.auth.LoginScreen
 import com.example.proyecto_final_team.ui.screens.auth.RegisterScreen
 import com.example.proyecto_final_team.ui.screens.detail.DetailScreen
@@ -64,6 +65,9 @@ fun NavGraph(navController: NavHostController) {
         ) { backStackEntry ->
             val routineId = backStackEntry.arguments?.getInt("routineId") ?: 0
             PlayerScreen(navController, routineId, favoritesViewModel)
+        }
+        composable(Screen.AddRoutine.route) {
+            AddRoutineScreen(navController)
         }
     }
 }

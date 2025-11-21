@@ -15,4 +15,5 @@ sealed class Screen(val route: String) {
     object Player : Screen("player/{routineId}") {
         fun createRoute(routineId: Int) = "player/$routineId"
     }
+    object AddRoutine : Screen("add_routine")
 }

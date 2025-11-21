@@ -12,7 +12,7 @@ object FakeData {
         Trainer(4, "John Smith", "Experto en respiración", "https://randomuser.me/api/portraits/men/11.jpg")
     )
 
-    val routines = listOf(
+    val routines = mutableListOf(
         Routine(
             1, "Yoga", "Yoga", "15 min", "Beginner", "Nada",
             "Comienza tu día con energía y concentración. Este flujo suave está diseñado para despertar tu cuerpo y mente, ayudándote a conectarte con tu respiración y establecer una intención positiva para el día que tienes por delante. Perfecto para todos los niveles.",
