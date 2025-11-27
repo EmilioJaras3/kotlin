@@ -19,14 +19,18 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import androidx.navigation.NavController
-import com.example.proyecto_final_team.data.FakeData
-import com.example.proyecto_final_team.ui.theme.AccentBlue
+import com.example.proyecto_final_team.viewmodel.HomeViewModel
+import com.example.proyecto_final_team.model.Routine
 import com.example.proyecto_final_team.viewmodel.FavoritesViewModel
+import com.example.proyecto_final_team.ui.theme.AccentBlue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerScreen(navController: NavController, routineId: Int, favoritesViewModel: FavoritesViewModel) {
-    val routine = FakeData.routines.find { it.id == routineId } ?: return
+fun PlayerScreen(navController: NavController, routineId: Int, favoritesViewModel: FavoritesViewModel, homeViewModel: HomeViewModel) {
+    val routineState = produceState<Routine?>(initialValue = null, key1 = routineId) {
+        value = homeViewModel.getRoutineById(routineId)
+    }
+    val routine = routineState.value ?: return
     val isFavorite = favoritesViewModel.favoriteRoutines.collectAsState().value.contains(routineId)
     val context = LocalContext.current
 

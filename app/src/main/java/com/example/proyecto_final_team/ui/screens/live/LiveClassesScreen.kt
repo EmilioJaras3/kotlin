@@ -22,14 +22,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.proyecto_final_team.data.FakeData
+import com.example.proyecto_final_team.viewmodel.HomeViewModel
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.getValue
 import com.example.proyecto_final_team.model.LiveClass
 import com.example.proyecto_final_team.ui.theme.AccentOrange
 import com.example.proyecto_final_team.ui.theme.PrimaryGreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LiveClassesScreen(navController: NavController) {
+fun LiveClassesScreen(navController: NavController, homeViewModel: HomeViewModel) {
+    val liveClasses by produceState<List<LiveClass>>(initialValue = emptyList()) {
+        value = homeViewModel.getLiveClasses()
+    }
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -69,7 +74,7 @@ fun LiveClassesScreen(navController: NavController) {
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                val liveNow = FakeData.liveClasses.find { it.isLiveNow }
+                val liveNow = liveClasses.find { it.isLiveNow }
                 if (liveNow != null) {
                     LiveNowCard(liveNow)
                 }
@@ -85,7 +90,7 @@ fun LiveClassesScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            items(FakeData.liveClasses.filter { !it.isLiveNow }) { liveClass ->
+            items(liveClasses.filter { !it.isLiveNow }) { liveClass ->
                 UpcomingClassCard(liveClass)
                 Spacer(modifier = Modifier.height(16.dp))
             }

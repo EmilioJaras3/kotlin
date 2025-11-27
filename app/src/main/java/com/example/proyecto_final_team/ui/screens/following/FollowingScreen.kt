@@ -23,14 +23,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.proyecto_final_team.data.FakeData
+import com.example.proyecto_final_team.viewmodel.HomeViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import com.example.proyecto_final_team.model.Trainer
 import com.example.proyecto_final_team.ui.theme.PrimaryGreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FollowingScreen(navController: NavController) {
-    val trainers = FakeData.trainers
+fun FollowingScreen(navController: NavController, homeViewModel: HomeViewModel) {
+    val allTrainers by homeViewModel.trainers.collectAsState(initial = emptyList())
+    val followedTrainers = allTrainers.filter { it.isFollowed }
 
     Scaffold(
         topBar = {
@@ -50,8 +53,8 @@ fun FollowingScreen(navController: NavController) {
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            items(trainers) { trainer ->
-                TrainerItem(trainer)
+            items(followedTrainers) { trainer ->
+                TrainerItem(trainer, homeViewModel)
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
@@ -59,7 +62,7 @@ fun FollowingScreen(navController: NavController) {
 }
 
 @Composable
-fun TrainerItem(trainer: Trainer) {
+fun TrainerItem(trainer: Trainer, homeViewModel: HomeViewModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -81,11 +84,11 @@ fun TrainerItem(trainer: Trainer) {
             Text(text = trainer.role, color = Color.Gray, fontSize = 12.sp)
         }
         Button(
-            onClick = { },
-            colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
+            onClick = { homeViewModel.toggleFollowTrainer(trainer.id, false) },
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
             shape = RoundedCornerShape(20.dp)
         ) {
-            Text("Siguiendo", fontSize = 12.sp)
+            Text("Dejar de seguir", fontSize = 12.sp)
         }
     }
 }

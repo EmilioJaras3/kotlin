@@ -19,13 +19,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.proyecto_final_team.data.FakeData
+import com.example.proyecto_final_team.viewmodel.HomeViewModel
+import com.example.proyecto_final_team.model.Trainer
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import com.example.proyecto_final_team.model.Routine
 import com.example.proyecto_final_team.ui.theme.PrimaryGreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddRoutineScreen(navController: NavController) {
+fun AddRoutineScreen(navController: NavController, homeViewModel: HomeViewModel) {
     var title by remember { mutableStateOf("") }
     var category by remember { mutableStateOf("") }
     var duration by remember { mutableStateOf("") }
@@ -33,6 +36,8 @@ fun AddRoutineScreen(navController: NavController) {
     var level by remember { mutableStateOf("General") }
     var expandedLevel by remember { mutableStateOf(false) }
     val levels = listOf("Beginner", "Intermediate", "Advanced", "General")
+
+    val trainers by homeViewModel.trainers.collectAsState(initial = emptyList())
 
     var imageUrl by remember { mutableStateOf("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070&auto=format&fit=crop") }
     var videoUri by remember { mutableStateOf<android.net.Uri?>(null) }
@@ -152,8 +157,8 @@ fun AddRoutineScreen(navController: NavController) {
 
             Button(
                 onClick = {
-                    if (title.isNotEmpty() && category.isNotEmpty()) {
-                        val newId = (FakeData.routines.maxOfOrNull { it.id } ?: 0) + 1
+                    if (title.isNotEmpty() && category.isNotEmpty() && trainers.isNotEmpty()) {
+                        val newId = (System.currentTimeMillis() % Int.MAX_VALUE).toInt() // Simple ID generation
                         val newRoutine = Routine(
                             id = newId,
                             title = title,
@@ -162,19 +167,20 @@ fun AddRoutineScreen(navController: NavController) {
                             level = level,
                             equipment = "None",
                             description = description,
-                            trainer = FakeData.trainers.random(),
+                            trainer = trainers.firstOrNull() ?: Trainer(0, "Unknown", "Unknown", ""), // Fallback if no trainers
                             imageUrl = imageUrl,
-                            videoUrl = videoUri?.toString() ?: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                            videoUrl = videoUri?.toString()
+                                ?: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
                             isFavorite = false
                         )
-                        FakeData.routines.add(newRoutine)
+                        homeViewModel.addRoutine(newRoutine)
                         navController.popBackStack()
                     }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
+                colors = ButtonDefaults.run { buttonColors(containerColor = PrimaryGreen) },
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text("Subir Rutina", fontSize = 16.sp, fontWeight = FontWeight.Bold)

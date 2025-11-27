@@ -24,16 +24,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.proyecto_final_team.data.FakeData
+import com.example.proyecto_final_team.viewmodel.HomeViewModel
+import androidx.compose.runtime.produceState
+import com.example.proyecto_final_team.model.Routine
+import com.example.proyecto_final_team.viewmodel.FavoritesViewModel
 import com.example.proyecto_final_team.ui.navigation.Screen
 import com.example.proyecto_final_team.ui.theme.AccentBlue
 import com.example.proyecto_final_team.ui.theme.AccentOrange
-import com.example.proyecto_final_team.viewmodel.FavoritesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailScreen(navController: NavController, routineId: Int, favoritesViewModel: FavoritesViewModel) {
-    val routine = FakeData.routines.find { it.id == routineId } ?: return
+fun DetailScreen(navController: NavController, routineId: Int, favoritesViewModel: FavoritesViewModel, homeViewModel: HomeViewModel) {
+    val routineState = produceState<Routine?>(initialValue = null, key1 = routineId) {
+        value = homeViewModel.getRoutineById(routineId)
+    }
+    val routine = routineState.value ?: return
+
     val isFavorite = favoritesViewModel.favoriteRoutines.collectAsState().value.contains(routineId)
 
     Scaffold(

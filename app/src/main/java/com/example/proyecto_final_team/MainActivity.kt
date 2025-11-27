@@ -23,7 +23,9 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavGraph(navController = navController)
+                    val database = com.example.proyecto_final_team.data.local.AppDatabase.getDatabase(applicationContext)
+                    val repository = com.example.proyecto_final_team.data.repository.RoutineRepository(database.routineDao())
+                    NavGraph(navController = navController, repository = repository)
                 }
             }
         }

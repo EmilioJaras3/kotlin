@@ -18,16 +18,18 @@ import androidx.navigation.NavController
 import com.example.proyecto_final_team.ui.navigation.Screen
 import com.example.proyecto_final_team.ui.theme.PrimaryGreen
 
-import com.example.proyecto_final_team.data.FakeData
+import com.example.proyecto_final_team.viewmodel.HomeViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavController, homeViewModel: HomeViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
     var loginError by remember { mutableStateOf<String?>(null) }
+    val scope = rememberCoroutineScope()
 
     Box(
         modifier = Modifier
@@ -154,11 +156,13 @@ fun LoginScreen(navController: NavController) {
                     loginError = null
                     
                     if (!emailError && !passwordError) {
-                        val user = FakeData.users.find { it.email == email && it.password == password }
-                        if (user != null) {
-                            navController.navigate(Screen.Home.route)
-                        } else {
-                            loginError = "Credenciales inválidas"
+                        scope.launch {
+                            val user = homeViewModel.getUser(email)
+                            if (user != null && user.password == password) {
+                                navController.navigate(Screen.Home.route)
+                            } else {
+                                loginError = "Credenciales inválidas"
+                            }
                         }
                     }
                 },

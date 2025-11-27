@@ -20,9 +20,23 @@ import com.example.proyecto_final_team.ui.screens.trainers.AllTrainersScreen
 import com.example.proyecto_final_team.ui.screens.welcome.WelcomeScreen
 import com.example.proyecto_final_team.viewmodel.FavoritesViewModel
 
+import com.example.proyecto_final_team.data.repository.RoutineRepository
+import com.example.proyecto_final_team.viewmodel.HomeViewModel
+import com.example.proyecto_final_team.viewmodel.HomeViewModelFactory
+
+import com.example.proyecto_final_team.viewmodel.FavoritesViewModelFactory
+import android.app.Application
+import androidx.compose.ui.platform.LocalContext
+
 @Composable
-fun NavGraph(navController: NavHostController) {
-    val favoritesViewModel: FavoritesViewModel = viewModel()
+fun NavGraph(navController: NavHostController, repository: RoutineRepository) {
+    val context = LocalContext.current
+    val favoritesViewModel: FavoritesViewModel = viewModel(
+        factory = FavoritesViewModelFactory(context.applicationContext as Application, repository)
+    )
+    val homeViewModel: HomeViewModel = viewModel(
+        factory = HomeViewModelFactory(repository)
+    )
     
     NavHost(
         navController = navController,
@@ -32,42 +46,42 @@ fun NavGraph(navController: NavHostController) {
             WelcomeScreen(navController)
         }
         composable(Screen.Login.route) {
-            LoginScreen(navController)
+            LoginScreen(navController, homeViewModel)
         }
         composable(Screen.Register.route) {
-            RegisterScreen(navController)
+            RegisterScreen(navController, homeViewModel)
         }
         composable(Screen.Home.route) {
-            HomeScreen(navController, favoritesViewModel)
+            HomeScreen(navController, favoritesViewModel, homeViewModel)
         }
         composable(
             route = Screen.Detail.route,
             arguments = listOf(navArgument("routineId") { type = NavType.IntType })
         ) { backStackEntry ->
             val routineId = backStackEntry.arguments?.getInt("routineId") ?: 0
-            DetailScreen(navController, routineId, favoritesViewModel)
+            DetailScreen(navController, routineId, favoritesViewModel, homeViewModel)
         }
         composable(Screen.LiveClasses.route) {
-            LiveClassesScreen(navController)
+            LiveClassesScreen(navController, homeViewModel)
         }
         composable(Screen.Saved.route) {
             SavedScreen(navController, favoritesViewModel)
         }
         composable(Screen.Following.route) {
-            FollowingScreen(navController)
+            FollowingScreen(navController, homeViewModel)
         }
         composable(Screen.AllTrainers.route) {
-            AllTrainersScreen(navController)
+            AllTrainersScreen(navController, homeViewModel)
         }
         composable(
             route = Screen.Player.route,
             arguments = listOf(navArgument("routineId") { type = NavType.IntType })
         ) { backStackEntry ->
             val routineId = backStackEntry.arguments?.getInt("routineId") ?: 0
-            PlayerScreen(navController, routineId, favoritesViewModel)
+            PlayerScreen(navController, routineId, favoritesViewModel, homeViewModel)
         }
         composable(Screen.AddRoutine.route) {
-            AddRoutineScreen(navController)
+            AddRoutineScreen(navController, homeViewModel)
         }
     }
 }

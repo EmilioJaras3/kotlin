@@ -18,7 +18,8 @@ data class Trainer(
     val id: Int,
     val name: String,
     val role: String,
-    val imageUrl: String
+    val imageUrl: String,
+    val isFollowed: Boolean = false
 )
 
 data class LiveClass(

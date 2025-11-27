@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.proyecto_final_team.data.FakeData
+import com.example.proyecto_final_team.viewmodel.HomeViewModel
 import com.example.proyecto_final_team.model.Routine
 import com.example.proyecto_final_team.ui.navigation.Screen
 import com.example.proyecto_final_team.ui.theme.AccentOrange
@@ -34,14 +34,16 @@ import com.example.proyecto_final_team.viewmodel.FavoritesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController, favoritesViewModel: FavoritesViewModel) {
+fun HomeScreen(navController: NavController, favoritesViewModel: FavoritesViewModel, homeViewModel: HomeViewModel) {
     var searchQuery by remember { mutableStateOf("") }
+    val routines by homeViewModel.routines.collectAsState()
+    val selectedCategory by homeViewModel.selectedCategory.collectAsState()
     
-    val filteredRoutines = remember(searchQuery) {
+    val filteredRoutines = remember(searchQuery, routines) {
         if (searchQuery.isBlank()) {
-            FakeData.routines
+            routines
         } else {
-            FakeData.routines.filter {
+            routines.filter {
                 it.title.contains(searchQuery, ignoreCase = true) ||
                 it.category.contains(searchQuery, ignoreCase = true) ||
                 it.trainer.name.contains(searchQuery, ignoreCase = true)
@@ -50,6 +52,7 @@ fun HomeScreen(navController: NavController, favoritesViewModel: FavoritesViewMo
     }
     
     Scaffold(
+        containerColor = Color.White,
         bottomBar = {
             BottomAppBar(
                 containerColor = Color.White,
@@ -107,69 +110,25 @@ fun HomeScreen(navController: NavController, favoritesViewModel: FavoritesViewMo
                         unfocusedContainerColor = Color(0xFFF3F4F6),
                         disabledContainerColor = Color(0xFFF3F4F6),
                         focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black
                     )
                 )
                 
                 Spacer(modifier = Modifier.height(24.dp))
-                
-                Text(
-                    text = "Para ti",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                
-                Spacer(modifier = Modifier.height(16.dp))
             }
 
             item {
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(FakeData.routines.take(3)) { routine ->
-                        RoutineCard(routine) {
-                            navController.navigate(Screen.Detail.createRoute(routine.id))
-                        }
-                    }
-                }
-                
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                Text(
-                    text = "TU libreria",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    LibraryCard("Saved", Color(0xFFE0F2F1))
-                    LibraryCard("Recent", Color(0xFFF3F4F6))
-                }
-                
-                Spacer(modifier = Modifier.height(24.dp))
-                
                 // Categories
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    val categories = listOf("Ejercicio", "Relajacion", "Yoga", "Meditacion")
-                    items(categories) { category ->
-                        Button(
-                            onClick = {},
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = if (category == "Ejercicio") AccentOrange else Color.White
-                            ),
-                            shape = RoundedCornerShape(16.dp),
-                            border = if (category != "Ejercicio") androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray) else null
-                        ) {
-                            Text(text = category, color = if (category == "Ejercicio") Color.White else Color.Gray)
-                        }
-                    }
+                    // Dynamic categories can be fetched from ViewModel if needed, or just allow user to add them.
+                    // For now, we'll keep it empty or simple as requested to remove hardcoded ones.
+                    // User said "remove pre-established routines of yoga, core, etc" and "remove hardcoded categories".
+                    // We will leave this empty for now or just show categories from existing routines if we implemented that logic.
+                    // Since we cleared data, there are no routines, so no categories to show yet.
                 }
                 
                 Spacer(modifier = Modifier.height(24.dp))

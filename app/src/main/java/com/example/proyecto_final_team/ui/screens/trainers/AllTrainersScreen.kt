@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,14 +23,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.proyecto_final_team.data.FakeData
+import com.example.proyecto_final_team.viewmodel.HomeViewModel
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.getValue
 import com.example.proyecto_final_team.model.Trainer
 import com.example.proyecto_final_team.ui.theme.PrimaryGreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AllTrainersScreen(navController: NavController) {
-    val trainers = FakeData.trainers
+fun AllTrainersScreen(navController: NavController, homeViewModel: HomeViewModel) {
+    val trainersList by homeViewModel.trainers.collectAsState(initial = emptyList())
 
     Scaffold(
         topBar = {
@@ -49,8 +52,8 @@ fun AllTrainersScreen(navController: NavController) {
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            items(trainers) { trainer ->
-                TrainerCard(trainer)
+            items(trainersList) { trainer ->
+                TrainerCard(trainer, homeViewModel)
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
@@ -58,7 +61,7 @@ fun AllTrainersScreen(navController: NavController) {
 }
 
 @Composable
-fun TrainerCard(trainer: Trainer) {
+fun TrainerCard(trainer: Trainer, homeViewModel: HomeViewModel) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -84,12 +87,14 @@ fun TrainerCard(trainer: Trainer) {
             Text(text = trainer.role, color = Color.Gray, fontSize = 14.sp)
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = { },
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
+                onClick = { homeViewModel.toggleFollowTrainer(trainer.id, !trainer.isFollowed) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (trainer.isFollowed) Color.Gray else PrimaryGreen
+                ),
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp)
             ) {
-                Text("Seguir")
+                Text(if (trainer.isFollowed) "Siguiendo" else "Seguir")
             }
         }
     }

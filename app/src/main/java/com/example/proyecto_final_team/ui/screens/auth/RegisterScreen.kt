@@ -14,14 +14,14 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.proyecto_final_team.data.FakeData
 import com.example.proyecto_final_team.model.User
 import com.example.proyecto_final_team.ui.navigation.Screen
 import com.example.proyecto_final_team.ui.theme.PrimaryGreen
+import com.example.proyecto_final_team.viewmodel.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(navController: NavController) {
+fun RegisterScreen(navController: NavController, homeViewModel: HomeViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -143,7 +143,7 @@ fun RegisterScreen(navController: NavController) {
                 onClick = {
                     if (email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty()) {
                         if (password == confirmPassword) {
-                            FakeData.users.add(User(email, password))
+                            homeViewModel.addUser(User(email, password))
                             navController.navigate(Screen.Login.route)
                         } else {
                             errorMessage = "Las contraseñas no coinciden"

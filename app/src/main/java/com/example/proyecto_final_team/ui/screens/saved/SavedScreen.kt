@@ -28,11 +28,16 @@ import com.example.proyecto_final_team.model.Routine
 import com.example.proyecto_final_team.ui.navigation.Screen
 import com.example.proyecto_final_team.ui.theme.AccentOrange
 import com.example.proyecto_final_team.viewmodel.FavoritesViewModel
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.getValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SavedScreen(navController: NavController, favoritesViewModel: FavoritesViewModel) {
-    val favoriteRoutines = favoritesViewModel.getFavoriteRoutines()
+    val favoriteIds by favoritesViewModel.favoriteRoutines.collectAsState()
+    val favoriteRoutines by produceState<List<Routine>>(initialValue = emptyList(), key1 = favoriteIds) {
+        value = favoritesViewModel.getFavoriteRoutinesList()
+    }
 
     Scaffold(
         topBar = {
