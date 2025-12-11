@@ -14,6 +14,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -24,6 +26,9 @@ import com.example.proyecto_final_team.model.Trainer
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.example.proyecto_final_team.model.Routine
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import com.example.proyecto_final_team.ui.theme.PrimaryGreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,6 +43,8 @@ fun AddRoutineScreen(navController: NavController, homeViewModel: HomeViewModel)
     val levels = listOf("Beginner", "Intermediate", "Advanced", "General")
 
     val trainers by homeViewModel.trainers.collectAsState(initial = emptyList())
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     var imageUrl by remember { mutableStateOf("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070&auto=format&fit=crop") }
     var videoUri by remember { mutableStateOf<android.net.Uri?>(null) }
@@ -86,7 +93,6 @@ fun AddRoutineScreen(navController: NavController, homeViewModel: HomeViewModel)
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Level Dropdown
             ExposedDropdownMenuBox(
                 expanded = expandedLevel,
                 onExpandedChange = { expandedLevel = !expandedLevel },
@@ -157,24 +163,44 @@ fun AddRoutineScreen(navController: NavController, homeViewModel: HomeViewModel)
 
             Button(
                 onClick = {
-                    if (title.isNotEmpty() && category.isNotEmpty() && trainers.isNotEmpty()) {
-                        val newId = (System.currentTimeMillis() % Int.MAX_VALUE).toInt() // Simple ID generation
-                        val newRoutine = Routine(
-                            id = newId,
-                            title = title,
-                            category = category,
-                            duration = "$duration min",
-                            level = level,
-                            equipment = "None",
-                            description = description,
-                            trainer = trainers.firstOrNull() ?: Trainer(0, "Unknown", "Unknown", ""), // Fallback if no trainers
-                            imageUrl = imageUrl,
-                            videoUrl = videoUri?.toString()
-                                ?: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-                            isFavorite = false
-                        )
-                        homeViewModel.addRoutine(newRoutine)
-                        navController.popBackStack()
+                    if (title.isNotEmpty() && category.isNotEmpty()) {
+                        scope.launch(Dispatchers.IO) {
+                            val newId = (System.currentTimeMillis() % Int.MAX_VALUE).toInt() // Simple ID generation
+                            val newRoutine = Routine(
+                                id = newId,
+                                title = title,
+                                category = category,
+                                duration = "$duration min",
+                                level = level,
+                                equipment = "None",
+                                description = description,
+                                trainer = trainers.firstOrNull() ?: Trainer(0, "Trainer", "Unknown", ""), // Fallback if no trainers
+                                imageUrl = imageUrl,
+                                videoUrl = videoUri?.toString()
+                                    ?: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                                isFavorite = false
+                            )
+                            
+                            // Try to take persistable permission for the video URI if it exists
+                            videoUri?.let { uri ->
+                                try {
+                                    val contentResolver = context.contentResolver
+                                    val takeFlags: Int = android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                    contentResolver.takePersistableUriPermission(uri, takeFlags)
+                                } catch (e: Exception) {
+                                    // Ignore if we can't take permission (e.g. if it's not a document URI)
+                                    e.printStackTrace()
+                                }
+                            }
+
+                            withContext(Dispatchers.Main) {
+                                homeViewModel.addRoutine(newRoutine)
+                                navController.popBackStack()
+                                Toast.makeText(context, "Rutina agregada exitosamente", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        Toast.makeText(context, "Por favor completa el título y la categoría", Toast.LENGTH_SHORT).show()
                     }
                 },
                 modifier = Modifier

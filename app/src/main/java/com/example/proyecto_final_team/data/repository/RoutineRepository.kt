@@ -54,8 +54,14 @@ class RoutineRepository(private val routineDao: RoutineDao) {
         routineDao.updateTrainerFollowStatus(trainerId, isFollowed)
     }
 
-    suspend fun getLiveClasses(): List<LiveClass> {
-        return routineDao.getLiveClasses().map { it.toDomain() }
+    fun getLiveClasses(): Flow<List<LiveClass>> {
+        return routineDao.getLiveClasses().map { list ->
+            list.map { it.toDomain() }
+        }
+    }
+
+    suspend fun toggleLiveClassReminder(id: Int, isReminderSet: Boolean) {
+        routineDao.updateLiveClassReminder(id, isReminderSet)
     }
 
     suspend fun getUser(email: String): User? {
@@ -67,6 +73,16 @@ class RoutineRepository(private val routineDao: RoutineDao) {
     }
 
     suspend fun initializeData() {
-        // No initial data seeding as per user request
+        if (routineDao.getRoutineCount() == 0) {
+            FakeData.trainers.forEach { trainer ->
+                routineDao.insertTrainer(trainer.toEntity())
+            }
+            FakeData.routines.forEach { routine ->
+                addRoutine(routine)
+            }
+            FakeData.liveClasses.forEach { liveClass ->
+                routineDao.insertAllLiveClasses(listOf(liveClass.toEntity()))
+            }
+        }
     }
 }

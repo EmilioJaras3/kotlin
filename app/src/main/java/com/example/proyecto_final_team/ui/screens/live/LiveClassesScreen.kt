@@ -12,6 +12,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,7 +24,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.proyecto_final_team.viewmodel.HomeViewModel
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.getValue
 import com.example.proyecto_final_team.model.LiveClass
 import com.example.proyecto_final_team.ui.theme.AccentOrange
@@ -32,9 +32,7 @@ import com.example.proyecto_final_team.ui.theme.PrimaryGreen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LiveClassesScreen(navController: NavController, homeViewModel: HomeViewModel) {
-    val liveClasses by produceState<List<LiveClass>>(initialValue = emptyList()) {
-        value = homeViewModel.getLiveClasses()
-    }
+    val liveClasses by homeViewModel.liveClasses.collectAsState(initial = emptyList())
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -91,7 +89,7 @@ fun LiveClassesScreen(navController: NavController, homeViewModel: HomeViewModel
             }
 
             items(liveClasses.filter { !it.isLiveNow }) { liveClass ->
-                UpcomingClassCard(liveClass)
+                UpcomingClassCard(liveClass, onReminderClick = { homeViewModel.toggleLiveClassReminder(liveClass.id, liveClass.isReminderSet) })
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
@@ -178,7 +176,7 @@ fun LiveNowCard(liveClass: LiveClass) {
 }
 
 @Composable
-fun UpcomingClassCard(liveClass: LiveClass) {
+fun UpcomingClassCard(liveClass: LiveClass, onReminderClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -192,12 +190,12 @@ fun UpcomingClassCard(liveClass: LiveClass) {
             Text(text = "Inicia a las ${liveClass.time}", color = PrimaryGreen, fontSize = 12.sp)
         }
         Button(
-            onClick = {},
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE0F2F1)),
+            onClick = onReminderClick,
+            colors = ButtonDefaults.buttonColors(containerColor = if (liveClass.isReminderSet) PrimaryGreen else Color(0xFFE0F2F1)),
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
             modifier = Modifier.height(32.dp)
         ) {
-            Text("Recordatorio", color = PrimaryGreen, fontSize = 12.sp)
+            Text(if (liveClass.isReminderSet) "Activado" else "Recordatorio", color = if (liveClass.isReminderSet) Color.White else PrimaryGreen, fontSize = 12.sp)
         }
     }
 }

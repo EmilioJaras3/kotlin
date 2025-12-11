@@ -8,6 +8,7 @@ import com.example.proyecto_final_team.model.Routine
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -71,8 +72,12 @@ class HomeViewModel(private val repository: RoutineRepository) : ViewModel() {
         }
     }
 
-    suspend fun getLiveClasses(): List<com.example.proyecto_final_team.model.LiveClass> {
-        return repository.getLiveClasses()
+    val liveClasses: Flow<List<com.example.proyecto_final_team.model.LiveClass>> = repository.getLiveClasses()
+
+    fun toggleLiveClassReminder(classId: Int, currentStatus: Boolean) {
+        viewModelScope.launch {
+            repository.toggleLiveClassReminder(classId, !currentStatus)
+        }
     }
 
     suspend fun getUser(email: String): com.example.proyecto_final_team.model.User? {

@@ -45,7 +45,10 @@ interface RoutineDao {
     suspend fun updateTrainerFollowStatus(trainerId: Int, isFollowed: Boolean)
 
     @Query("SELECT * FROM live_classes")
-    suspend fun getLiveClasses(): List<LiveClassEntity>
+    fun getLiveClasses(): Flow<List<LiveClassEntity>>
+
+    @Query("UPDATE live_classes SET isReminderSet = :isReminderSet WHERE id = :id")
+    suspend fun updateLiveClassReminder(id: Int, isReminderSet: Boolean)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllLiveClasses(liveClasses: List<LiveClassEntity>)

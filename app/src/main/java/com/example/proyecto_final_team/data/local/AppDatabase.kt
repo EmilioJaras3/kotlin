@@ -12,7 +12,7 @@ import com.example.proyecto_final_team.data.local.entity.LiveClassEntity
 
 import com.example.proyecto_final_team.data.local.entity.UserEntity
 
-@Database(entities = [RoutineEntity::class, TrainerEntity::class, LiveClassEntity::class, UserEntity::class], version = 2)
+@Database(entities = [RoutineEntity::class, TrainerEntity::class, LiveClassEntity::class, UserEntity::class], version = 4)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun routineDao(): RoutineDao
 

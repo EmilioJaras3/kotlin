@@ -11,9 +11,10 @@ data class LiveClassEntity(
     val trainerName: String,
     val time: String,
     val isLiveNow: Boolean,
-    val imageUrl: String
+    val imageUrl: String,
+    val isReminderSet: Boolean
 ) {
-    fun toDomain() = LiveClass(id, title, trainerName, time, isLiveNow, imageUrl)
+    fun toDomain() = LiveClass(id, title, trainerName, time, isLiveNow, imageUrl, isReminderSet)
 }
 
-fun LiveClass.toEntity() = LiveClassEntity(id, title, trainerName, time, isLiveNow, imageUrl)
+fun LiveClass.toEntity() = LiveClassEntity(id, title, trainerName, time, isLiveNow, imageUrl, isReminderSet)

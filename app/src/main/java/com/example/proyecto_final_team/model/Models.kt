@@ -28,7 +28,8 @@ data class LiveClass(
     val trainerName: String,
     val time: String,
     val isLiveNow: Boolean,
-    val imageUrl: String
+    val imageUrl: String,
+    val isReminderSet: Boolean = false
 )
 
 data class User(
